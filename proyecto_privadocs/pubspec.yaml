@@ -21,13 +21,12 @@ dependencies:
   provider: ^6.1.2
   intl: ^0.20.2
   image_picker: ^1.1.2
-  file_picker: ^10.3.7
+  file_picker: ^8.1.2
   path_provider: ^2.1.4
   uuid: ^4.5.0
-  flutter_local_notifications: ^19.5.0
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
+  flutter_local_notifications: ^17.2.3
+  flutter_timezone: ^1.0.8
+  timezone: ^0.9.4  # ← Agregado: Requerido para TZDateTime
   cupertino_icons: ^1.0.8
 
 dev_dependencies:

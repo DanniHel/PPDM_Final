@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "935784685786",
+    "project_id": "privadocsapp",
+    "storage_bucket": "privadocsapp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:935784685786:android:f1d482e19e7125cb7c05e3",
+        "android_client_info": {
+          "package_name": "com.example.proyecto_privadocs"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCQ-oOZbQGrJS0yOP9psaTqb2cUOcPa2kw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
