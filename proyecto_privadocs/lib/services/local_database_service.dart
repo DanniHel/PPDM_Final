@@ -1,26 +1,26 @@
 import '../models/document.dart';
-import '../models/user.dart';
+import '../models/app_user.dart';
 
 class LocalDatabaseService {
   static final LocalDatabaseService _instance = LocalDatabaseService._internal();
   factory LocalDatabaseService() => _instance;
   LocalDatabaseService._internal();
 
-  User? _currentUser;
+  AppUser? _currentUser;
   final List<Document> _documents = [];
 
   // Auth simulado
-  User? get currentUser => _currentUser;
+  AppUser? get currentUser => _currentUser;
 
-  Future<User> register(String name, String email, String password) async {
+  Future<AppUser> register(String name, String email, String password) async {
     await Future.delayed(const Duration(milliseconds: 800));
-    _currentUser = User(id: DateTime.now().toString(), name: name, email: email);
+    _currentUser = AppUser(id: DateTime.now().toString(), name: name, email: email);
     return _currentUser!;
   }
 
-  Future<User> login(String email, String password) async {
+  Future<AppUser> login(String email, String password) async {
     await Future.delayed(const Duration(milliseconds: 800));
-    _currentUser = User(id: "temp_user_123", name: "Usuario Temporal", email: email);
+    _currentUser = AppUser(id: "temp_user_123", name: "Usuario Temporal", email: email);
     return _currentUser!;
   }
 

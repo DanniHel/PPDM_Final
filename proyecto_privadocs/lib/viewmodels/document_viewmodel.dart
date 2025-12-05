@@ -1,42 +1,40 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import '../models/document.dart';
-import '../services/local_database_service.dart';
+import '../services/firebase_service.dart';
+import '../services/notification_service.dart';
 
 class DocumentViewModel extends ChangeNotifier {
-  final LocalDatabaseService _db = LocalDatabaseService();
-
+  final FirebaseService _db = FirebaseService();
   List<Document> _documents = [];
   List<Document> get documents => _documents;
 
-  bool _isLoading = false;
-  bool get isLoading => _isLoading;
+  Stream<List<Document>> documentsStream() {
+    final userId = _db.currentUser?.uid;
+    if (userId == null) return Stream.value([]);
+    return _db.getDocumentsStream(userId);
+  }
 
-  Future<void> loadDocuments() async {
-    _isLoading = true;
-    notifyListeners();
-
-    await Future.delayed(const Duration(milliseconds: 300));
-    final userId = _db.currentUser?.id;
-    if (userId != null) {
-      _documents = _db.getDocuments(userId);
+  Future<void> addDocument(Document doc, File? file) async {
+    await _db.addDocument(doc, file);
+    if (doc.expiryDate != null) {
+      await NotificationService.scheduleReminder(doc);
     }
-
-    _isLoading = false;
     notifyListeners();
   }
 
-  Future<void> addDocument(Document doc) async {
-    await _db.addDocument(doc);
-    await loadDocuments();
+  Future<void> updateDocument(Document doc, File? file) async {
+    await _db.updateDocument(doc, file);
+    if (doc.expiryDate != null) {
+      await NotificationService.scheduleReminder(doc);
+    }
+    notifyListeners();
   }
 
-  Future<void> updateDocument(Document doc) async {
-    await _db.updateDocument(doc);
-    await loadDocuments();
+  Future<void> deleteDocument(String id, String? fileName) async {
+    await _db.deleteDocument(id, fileName);
+    notifyListeners();
   }
 
-  Future<void> deleteDocument(String id) async {
-    await _db.deleteDocument(id);
-    await loadDocuments();
-  }
+
 }

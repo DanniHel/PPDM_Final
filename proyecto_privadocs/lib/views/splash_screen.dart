@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-//import '../viewmodels/auth_viewmodel.dart'; // lo crearemos en un segundo
+import '../viewmodels/auth_viewmodel.dart';
 import 'auth/login_screen.dart';
 import 'home/home_screen.dart';
 
@@ -9,27 +9,30 @@ class SplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Simulamos una pequeña carga y decidimos a dónde ir
-    Future.delayed(const Duration(seconds: 2), () {
-      // Por ahora vamos directo al login (cuando tengamos AuthViewModel será más inteligente)
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const LoginScreen()),
-      );
-    });
+    final authVM = context.watch<AuthViewModel>();
 
-    return const Scaffold(
+    // Si ya sabemos si hay usuario → vamos directo
+    if (authVM.firebaseUser != null) {
+      return const HomeScreen();
+    }
+    if (authVM.firebaseUser == null && !authVM.isLoading) {
+      return const LoginScreen();
+    }
+
+    // Mientras Firebase decide...
+    return Scaffold(
       backgroundColor: Colors.indigo,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.folder_special_outlined, size: 100, color: Colors.white),
-            SizedBox(height: 20),
+          children: const [
+            Icon(Icons.folder_special, size: 120, color: Colors.white),
+            SizedBox(height: 30),
             Text(
               'Privadocs',
-              style: TextStyle(fontSize: 40, color: Colors.white, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 48, color: Colors.white, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 40),
             CircularProgressIndicator(color: Colors.white),
           ],
         ),
