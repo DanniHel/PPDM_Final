@@ -1,3 +1,4 @@
+// lib/views/home/home_screen.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../models/document.dart';
@@ -6,12 +7,25 @@ import '../../viewmodels/document_viewmodel.dart';
 import '../document/document_form_screen.dart';
 import 'components/document_card.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // CARGA INMEDIATA al entrar en HomeScreen
+    final userId = context.read<AuthViewModel>().currentUser!.uid;
+    context.read<DocumentViewModel>().loadDocuments(userId);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final authVM = context.read<AuthViewModel>();
+    final userId = context.watch<AuthViewModel>().currentUser!.uid;
 
     return Scaffold(
       appBar: AppBar(
@@ -19,39 +33,14 @@ class HomeScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
-            onPressed: () async {
-              await authVM.signOut();
-            },
-            tooltip: 'Cerrar sesión',
+            onPressed: () => context.read<AuthViewModel>().signOut(),
           ),
         ],
       ),
       body: StreamBuilder<List<Document>>(
-        stream: context.read<DocumentViewModel>().documentsStream(),
+        stream: context.read<DocumentViewModel>().stream(userId),
         builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.cloud_off, size: 64, color: Colors.grey),
-                  const SizedBox(height: 16),
-                  const Text('Sin conexión', style: TextStyle(fontSize: 18)),
-                  const Text('Los cambios se guardarán al recuperar internet'),
-                  ElevatedButton(
-                    onPressed: () => context.read<DocumentViewModel>().documentsStream(),
-                    child: const Text('Reintentar'),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          final docs = snapshot.data!;
+          final docs = context.watch<DocumentViewModel>().documents;
 
           if (docs.isEmpty) {
             return Center(
@@ -60,12 +49,14 @@ class HomeScreen extends StatelessWidget {
                 children: [
                   const Icon(Icons.folder_open, size: 80, color: Colors.grey),
                   const SizedBox(height: 20),
-                  const Text('Aún no tienes documentos', style: TextStyle(fontSize: 20)),
-                  const SizedBox(height: 10),
+                  const Text('No tienes documentos aún'),
                   ElevatedButton.icon(
-                    onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DocumentFormScreen())),
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const DocumentFormScreen()),
+                    ),
                     icon: const Icon(Icons.add),
-                    label: const Text('Agregar el primero'),
+                    label: const Text('Agregar primero'),
                   ),
                 ],
               ),
@@ -75,12 +66,15 @@ class HomeScreen extends StatelessWidget {
           return ListView.builder(
             padding: const EdgeInsets.all(12),
             itemCount: docs.length,
-            itemBuilder: (context, index) => DocumentCard(document: docs[index]),
+            itemBuilder: (_, i) => DocumentCard(document: docs[i]),
           );
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DocumentFormScreen())),
+        onPressed: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const DocumentFormScreen()),
+        ),
         child: const Icon(Icons.add),
       ),
     );

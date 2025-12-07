@@ -1,103 +1,94 @@
 // lib/models/document.dart
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:io';
+import 'package:hive/hive.dart';
+
+part 'document.g.dart';
 
 enum DocumentType { licencia, seguro, certificado, contrato, otro }
 
-class Document {
-  final String id;
-  final String userId;
-  final String name;
-  final DocumentType type;
-  final DateTime issueDate;
-  final DateTime? expiryDate;
-  final String? filePath;   // URL de Firebase Storage
-  final String? fileName;
+@HiveType(typeId: 0)
+class Document extends HiveObject {
+  @HiveField(0) String id;
+  @HiveField(1) String userId;
+  @HiveField(2) String name;
+  @HiveField(3) int typeIndex;
+  @HiveField(4) DateTime issueDate;
+  @HiveField(5) DateTime? expiryDate;
+  @HiveField(6) String fileLocalPath;
+  @HiveField(7) String? fileName;
+  @HiveField(8) String? fileRemoteUrl;
+  @HiveField(9) bool isSynced;
+  @HiveField(10) DateTime createdAt;
+  @HiveField(11) DateTime updatedAt;
 
   Document({
     required this.id,
     required this.userId,
     required this.name,
-    required this.type,
+    required this.typeIndex,
     required this.issueDate,
     this.expiryDate,
-    this.filePath,
+    required this.fileLocalPath,
     this.fileName,
+    this.fileRemoteUrl,
+    this.isSynced = false,
+    required this.createdAt,
+    required this.updatedAt,
   });
 
-  // Convertir a Map para guardar en Firestore
-  Map<String, dynamic> toMap() {
-    return {
-      'userId': userId,
-      'name': name,
-      'type': type.toString(),
-      'issueDate': Timestamp.fromDate(issueDate),
-      'expiryDate': expiryDate != null ? Timestamp.fromDate(expiryDate!) : null,
-      'filePath': filePath,
-      'fileName': fileName,
-    };
-  }
+  DocumentType get type => DocumentType.values[typeIndex];
+  set type(DocumentType value) => typeIndex = value.index;
 
-  // Leer desde Firestore
-  factory Document.fromMap(Map<String, dynamic> map, String docId) {
-    return Document(
-      id: docId,
-      userId: map['userId'] ?? '',
-      name: map['name'] ?? '',
-      type: _parseType(map['type']),
-      issueDate: _toDateTime(map['issueDate']),
-      expiryDate: map['expiryDate'] != null ? _toDateTime(map['expiryDate']) : null,
-      filePath: map['filePath'],
-      fileName: map['fileName'],
-    );
-  }
+  bool get hasFile => fileLocalPath.isNotEmpty && File(fileLocalPath).existsSync();
+  String get fileExtension => fileName?.split('.').last.toLowerCase() ?? '';
 
-  // Método copyWith CORREGIDO (sin basura)
   Document copyWith({
     String? id,
     String? userId,
     String? name,
-    DocumentType? type,
+    int? typeIndex,
     DateTime? issueDate,
-    DateTime? expiryDate,  // ← CORREGIDO: sin comentarios raros
-    String? filePath,
+    DateTime? expiryDate,
+    String? fileLocalPath,
     String? fileName,
+    String? fileRemoteUrl,
+    bool? isSynced,
+    DateTime? createdAt,
+    DateTime? updatedAt,
   }) {
     return Document(
       id: id ?? this.id,
       userId: userId ?? this.userId,
       name: name ?? this.name,
-      type: type ?? this.type,
+      typeIndex: typeIndex ?? this.typeIndex,
       issueDate: issueDate ?? this.issueDate,
       expiryDate: expiryDate ?? this.expiryDate,
-      filePath: filePath ?? this.filePath,
+      fileLocalPath: fileLocalPath ?? this.fileLocalPath,
       fileName: fileName ?? this.fileName,
+      fileRemoteUrl: fileRemoteUrl ?? this.fileRemoteUrl,
+      isSynced: isSynced ?? this.isSynced,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
     );
   }
 
-  // Helpers privados
-  static DocumentType _parseType(String? typeStr) {
-    if (typeStr == null) return DocumentType.otro;
-    return DocumentType.values.firstWhere(
-          (e) => e.toString() == typeStr,
-      orElse: () => DocumentType.otro,
-    );
-  }
-
-  static DateTime _toDateTime(dynamic value) {
-    if (value is Timestamp) {
-      return value.toDate();
-    }
-    if (value is DateTime) {
-      return value;
-    }
-    return DateTime.now();
+  Map<String, dynamic> toMap() {
+    return {
+      'userId': userId,
+      'name': name,
+      'type': type.toString(),
+      'issueDate': issueDate,
+      'expiryDate': expiryDate,
+      'fileName': fileName,
+      'fileLocalPath': fileLocalPath,
+      'fileRemoteUrl': fileRemoteUrl,
+      'isSynced': isSynced,
+      'createdAt': createdAt,
+      'updatedAt': updatedAt,
+    };
   }
 }
 
-// Extensión para capitalizar texto (usado en las tarjetas)
 extension StringExtension on String {
-  String capitalize() {
-    if (isEmpty) return this;
-    return this[0].toUpperCase() + substring(1);
-  }
+  String capitalize() => isEmpty ? this : this[0].toUpperCase() + substring(1);
 }

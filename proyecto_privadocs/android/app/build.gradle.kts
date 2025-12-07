@@ -11,14 +11,14 @@ android {
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
+        // SOLUCIÓN CORRECTA PARA KOTLIN DSL
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
-        // CORRECTO PARA KOTLIN DSL
-        isCoreLibraryDesugaringEnabled = true
     }
 
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
     defaultConfig {
@@ -27,7 +27,6 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-        multiDexEnabled = true
     }
 
     buildTypes {
@@ -37,9 +36,9 @@ android {
     }
 }
 
-// CORRECTO PARA KOTLIN DSL (esta es la línea que faltaba)
+// SOLUCIÓN CORRECTA PARA DESUGARING EN KTS
 dependencies {
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.2")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 }
 
 flutter {

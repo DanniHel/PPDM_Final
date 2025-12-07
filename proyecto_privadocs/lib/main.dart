@@ -1,9 +1,13 @@
+// lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:hive_flutter/hive_flutter.dart'; // ← IMPORTANTE
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
+import 'models/document.dart'; // ← NUEVO
+import 'services/local_document_service.dart';
 import 'services/notification_service.dart';
+import 'services/sync_service.dart';
 import 'viewmodels/auth_viewmodel.dart';
 import 'viewmodels/document_viewmodel.dart';
 import 'views/splash_screen.dart';
@@ -11,17 +15,15 @@ import 'views/splash_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  // ← REGISTRAR HIVE + ADAPTER (ESTO FALTABA)
+  await Hive.initFlutter();
+  Hive.registerAdapter(DocumentAdapter()); // ← LA LÍNEA MÁGICA
+  await Hive.openBox<Document>('documents'); // opcional, pero recomendado
 
-  // OFFLINE PERSISTENCE (¡IMPORTANTE!)
-  FirebaseFirestore.instance.settings = const Settings(
-    persistenceEnabled: true,
-    cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
-  );
-
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await NotificationService.init();
+  await LocalDocumentService.init();
+  await SyncService.init();
 
   runApp(const MyApp());
 }
@@ -35,6 +37,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthViewModel()),
         ChangeNotifierProvider(create: (_) => DocumentViewModel()),
+        ChangeNotifierProvider(create: (_) => SyncService()),
       ],
       child: MaterialApp(
         title: 'Privadocs',
@@ -42,7 +45,6 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.indigo,
           useMaterial3: true,
-          fontFamily: 'Roboto',
         ),
         home: const SplashScreen(),
       ),
