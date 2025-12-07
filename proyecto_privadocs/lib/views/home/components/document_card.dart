@@ -1,4 +1,3 @@
-// lib/views/home/components/document_card.dart
 import 'package:flutter/material.dart';
 import '../../../models/document.dart';
 import '../../document/document_detail_screen.dart';

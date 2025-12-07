@@ -1,4 +1,3 @@
-// lib/models/document.dart
 import 'dart:io';
 import 'package:hive/hive.dart';
 

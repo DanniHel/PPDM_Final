@@ -1,4 +1,3 @@
-// lib/views/document/document_form_screen.dart
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
@@ -157,7 +156,7 @@ class _DocumentFormScreenState extends State<DocumentFormScreen> {
                     typeIndex: _type.index,
                     issueDate: _issueDate,
                     expiryDate: _expiryDate,
-                    fileLocalPath: '', // se llena en el ViewModel
+                    fileLocalPath: '',
                     fileName: null,
                     fileRemoteUrl: null,
                     isSynced: false,

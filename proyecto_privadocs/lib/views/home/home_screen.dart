@@ -1,4 +1,3 @@
-// lib/views/home/home_screen.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../models/document.dart';
@@ -18,7 +17,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // CARGA INMEDIATA al entrar en HomeScreen
+    // CARGA INMEDIATA
     final userId = context.read<AuthViewModel>().currentUser!.uid;
     context.read<DocumentViewModel>().loadDocuments(userId);
   }

@@ -1,4 +1,3 @@
-// lib/viewmodels/auth_viewmodel.dart
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../services/firebase_service.dart';
@@ -13,7 +12,7 @@ class AuthViewModel extends ChangeNotifier {
 
   void _setLoading(bool value) {
     _isLoading = value;
-    notifyListeners(); // ← Actualiza el botón
+    notifyListeners();
   }
 
   Future<void> signIn(String email, String password) async {
@@ -23,7 +22,7 @@ class AuthViewModel extends ChangeNotifier {
     } catch (e) {
       rethrow;
     } finally {
-      _setLoading(false); // ← IMPORTANTE: siempre se ejecuta
+      _setLoading(false);
     }
   }
 
@@ -34,12 +33,12 @@ class AuthViewModel extends ChangeNotifier {
     } catch (e) {
       rethrow;
     } finally {
-      _setLoading(false); // ← SIEMPRE resetea
+      _setLoading(false); // resetea
     }
   }
 
   Future<void> signOut() async {
-    _setLoading(false); // ← Resetea el loading al cerrar sesión
+    _setLoading(false); // Resetea al cerrar sesión
     await _service.signOut();
     notifyListeners();
   }

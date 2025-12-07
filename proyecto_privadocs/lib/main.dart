@@ -1,10 +1,9 @@
-// lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:hive_flutter/hive_flutter.dart'; // ← IMPORTANTE
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
-import 'models/document.dart'; // ← NUEVO
+import 'models/document.dart';
 import 'services/local_document_service.dart';
 import 'services/notification_service.dart';
 import 'services/sync_service.dart';
@@ -15,10 +14,10 @@ import 'views/splash_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // ← REGISTRAR HIVE + ADAPTER (ESTO FALTABA)
+  // REGISTRAR HIVE + ADAPTER
   await Hive.initFlutter();
-  Hive.registerAdapter(DocumentAdapter()); // ← LA LÍNEA MÁGICA
-  await Hive.openBox<Document>('documents'); // opcional, pero recomendado
+  Hive.registerAdapter(DocumentAdapter());
+  await Hive.openBox<Document>('documents');
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await NotificationService.init();
