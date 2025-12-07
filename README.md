@@ -1,32 +1,100 @@
-# Privadocs - Gestión Personal de Documentos
+# PRIVADOCS – Gestor de Documentos Personales (Offline-First)
 
-**Universidad La Salle - Arequipa**  
+**Carrera:** Ingeniería de Software  
 **Curso:** Programación para Dispositivos Móviles  
-**Docente:** Ing. Josué Miguel Flores Parra  
-**Ciclo:** 2025-2  
+**Docente:** Josué Miguel Flores Parra  
+**Integrantes:**  
+- Quispe Cjuiro Danny  
+- Vizarreta Checya Carlos  
 
-### Integrantes
-- **Carlos Adrián Vizarreta Checya**  
-- **Danny Quispe Cjuiro**  
+**Arequipa, Perú – 2025**
 
 ---
 
-### Avance Actual - 25 de noviembre de 2025
+## Descripción del Proyecto
 
-Se ha completado con éxito la **estructura base de navegación** y todas las **vistas principales** de la aplicación **Privadocs**, cumpliendo al 100 % con el entregable solicitado:  
-**"Solo las vistas funcionales con navegación entre pantallas bajo arquitectura MVVM"**.
+**Privadocs** es una aplicación móvil desarrollada en **Flutter** que permite gestionar documentos personales de forma segura, organizada y **100% funcional sin conexión a internet**.
 
-### Pantallas Implementadas y Totalmente Navegables
-1. LoginScreen → Inicio de sesión  
-2. RegisterScreen → Registro de nuevo usuario  
-3. HomeScreen → Lista principal de documentos (con barra de búsqueda y filtro)  
-4. DocumentFormScreen → Formulario reutilizable para **agregar** y **editar** documentos  
-5. DocumentDetailScreen → Detalle del documento con opciones de editar y eliminar  
+El objetivo es evitar olvidos, multas o problemas por documentos vencidos mediante:
+- Registro de documentos con fotos o PDFs
+- Alertas automáticas 7 días antes del vencimiento
+- Búsqueda y filtrado por tipo
+- Edición y eliminación de documentos
 
-### Características Técnicas Implementadas
-- Navegación nombrada limpia usando `MaterialApp.routes`  
-- Paso correcto y seguro de argumentos entre pantallas  
-- Arquitectura preparada para MVVM (carpetas separadas para core, presentation y viewmodels)  
-- Código 100 % funcional, sin errores ni warnings críticos  
-- Uso de Flutter actualizado (2025) con null-safety y Material 3  
+> **Offline-First**: Todo funciona sin conexión. Los datos se guardan localmente con Hive.
 
+---
+
+## Funcionalidades Principales
+
+| Funcionalidad                        | Estado     | Detalle |
+|-------------------------------------|------------|-------|
+| Registro y login con Firebase Auth  | Completed | Correo y contraseña |
+| Crear documentos con foto/PDF       | Completed | FilePicker + almacenamiento local |
+| Ver documentos (fotos y PDFs)       | Completed | Syncfusion PDF Viewer |
+| Alertas de vencimiento (7 días)     | Completed | Notificaciones locales (sin permisos) |
+| Funciona 100% sin internet         | Completed | Hive + archivos locales |
+| Sincronización automática          | Completed | SyncService + Firebase Storage |
+| Editar / Eliminar documentos        | Completed | Actualización en tiempo real |
+
+
+---
+
+## Tecnologías Utilizadas
+
+- **Flutter** 3.19+ (Dart)
+- **Firebase Authentication** – Login seguro
+- **Hive** – Base de datos local (offline-first)
+- **Syncfusion Flutter PDFViewer** – Visualización profesional de PDFs
+- **Flutter Local Notifications** + **Timezone** – Alertas locales
+- **File Picker** – Adjuntar fotos y PDFs
+- **Provider** – Gestión de estado
+
+
+---
+
+## Estructura de la Base de Datos Local (Hive)
+
+```dart
+class Document {
+  String id;
+  String userId;
+  String name;
+  DocumentType type;        // licencia, seguro, certificado, etc.
+  DateTime issueDate;
+  DateTime? expiryDate;
+  String fileLocalPath;     // Ruta del archivo en el dispositivo
+  String? fileName;
+  String? fileRemoteUrl;
+  bool isSynced;
+  DateTime createdAt;
+  DateTime updatedAt;
+}
+```
+
+## Instalación
+```bash
+git clone https://github.com/tu-usuario/privadocs.git
+cd privadocs
+flutter pub get
+flutter pub run build_runner build --delete-conflicting-outputs
+flutter run
+```
+
+## Capturas
+
+<table>
+  <tr>
+    <td><img src="figuras/login.jpg" width="200"></td>
+    <td><img src="figuras/lista.jpg" width="200"></td>
+    <td><img src="figuras/nuevo.jpg" width="200"></td>
+    <td><img src="figuras/vizualizar.jpg" width="200"></td>
+  </tr>
+</table>
+
+## Estado 2025
+✔ Login y registro  
+✔ CRUD documentos  
+✔ Visor PDF  
+✔ Notificaciones  
+✔ Offline-first  
